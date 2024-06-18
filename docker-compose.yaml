@@ -1,0 +1,45 @@
+version: '3.8'
+networks:
+  hotelcenter_network:
+services:
+  frontend:
+    build:
+      context: ./frontend/
+    container_name: nextjsapp
+    ports:
+      - '3000:3000'
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app
+    networks:
+        - hotelcenter_network
+
+  backend:
+    build:
+      context: ./HotelHub/
+    container_name: hotelapp
+    ports:
+      - '8000:8000'
+    depends_on:
+      - mysql
+    networks:
+        - hotelcenter_network
+  mysql:
+    image: mysql:8.2
+    container_name: mysql
+    restart: always
+    ports:
+      - '3306:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: laravel
+      MYSQL_PASSWORD: root
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+    networks:
+      - hotelcenter_network
+volumes:
+  mysql_data:
+
